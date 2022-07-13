@@ -1,26 +1,55 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { SignupAuthDto } from './dto/signup-auth.dto';
+import { User } from 'src/user/schema/user.schema';
+import { UserService } from 'src/user/user.service';
+import { EmailSigninDto, UsernameSigninDto } from './dto/signin-auth.dto';
 
-@Injectable()
+@Injectable({})
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+  constructor(private userService: UserService) {}
+
+  public async isEmailTaken(email: string): Promise<boolean> {
+    try {
+      const emailInUse = await this.userService.findOne({ email: email });
+
+      return emailInUse ? true : false;
+    } catch (error) {
+      console.log(error);
+    }
+
+    return false;
   }
 
-  findAll() {
-    return `This action returns all auth`;
+  public async isUsernameTaken(username: string): Promise<boolean> {
+    try {
+      const usernameInUse = await this.userService.findOne({
+        username: username,
+      });
+
+      return usernameInUse ? true : false;
+    } catch (error) {
+      console.log(error);
+    }
+
+    return false;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
+  public async signup(signupDto: SignupAuthDto): Promise<User> {
+    try {
+      const user: User = await this.userService.create(signupDto);
+
+      delete user.password;
+      return user;
+    } catch (error) {
+      throw new Error(String(error));
+    }
   }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+  public async signin(signinAuthDto: EmailSigninDto | UsernameSigninDto) {
+    let user = signinAuthDto;
+    if (signinAuthDto.email) {
+      user = signinAuthDto;
+    }
+    return user;
   }
 }
