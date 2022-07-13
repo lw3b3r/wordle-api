@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
-// import {Game} from '';
-// import {Group} from '';
+import { Game } from 'src/game/schema/game.schema';
+import { Group } from 'src/group/schema/group.schema';
 
 export type UserDocument = User & Document;
 
