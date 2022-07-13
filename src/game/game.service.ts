@@ -1,26 +1,55 @@
 import { Injectable } from '@nestjs/common';
-import { CreateGameDto } from './dto/create-game.dto';
-import { UpdateGameDto } from './dto/update-game.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { CreateGameDto, UpdateGameDto, FindGameDto } from './dto';
+import { Game, GameDocument } from './schema/game.schema';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class GameService {
-  create(createGameDto: CreateGameDto) {
-    return 'This action adds a new game';
+  constructor(@InjectModel(Game.name) private gameModel: Model<GameDocument>) {}
+
+  public async create(createGameDto: CreateGameDto): Promise<Game> {
+    try {
+      return await this.gameModel.create(createGameDto);
+    } catch (error) {
+      throw new Error(String(error));
+    }
   }
 
-  findAll() {
-    return `This action returns all game`;
+  public async findAll(query: FindGameDto): Promise<Game[]> {
+    try {
+      return await this.gameModel.find(query);
+    } catch (error) {
+      throw new Error(String(error));
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} game`;
+  public async findOne(query: FindGameDto): Promise<Game> {
+    try {
+      return await this.gameModel.findOne(query);
+    } catch (error) {
+      throw new Error(String(error));
+    }
   }
 
-  update(id: number, updateGameDto: UpdateGameDto) {
-    return `This action updates a #${id} game`;
+  public async update(updateGameDto: UpdateGameDto): Promise<Game> {
+    const _id: string = updateGameDto._id;
+    delete updateGameDto._id;
+
+    try {
+      return await this.gameModel.findByIdAndUpdate(_id, updateGameDto, {
+        new: true,
+      });
+    } catch (error) {
+      throw new Error(String(error));
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} game`;
+  public async remove(_id: string): Promise<Game> {
+    try {
+      return await this.gameModel.findByIdAndRemove(_id);
+    } catch (error) {
+      throw new Error(String(error));
+    }
   }
 }

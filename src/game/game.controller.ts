@@ -1,34 +1,41 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { GameService } from './game.service';
-import { CreateGameDto } from './dto/create-game.dto';
-import { UpdateGameDto } from './dto/update-game.dto';
+import { CreateGameDto, UpdateGameDto, FindGameDto } from './dto';
 
 @Controller('game')
 export class GameController {
   constructor(private readonly gameService: GameService) {}
 
-  @Post()
+  @Post('create')
   create(@Body() createGameDto: CreateGameDto) {
     return this.gameService.create(createGameDto);
   }
 
-  @Get()
-  findAll() {
-    return this.gameService.findAll();
+  @Get('getall/:key/:value')
+  findAll(@Param() query: FindGameDto) {
+    return this.gameService.findAll(query);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.gameService.findOne(+id);
+  @Get('get/:key/:value')
+  findOne(@Param() query: FindGameDto) {
+    return this.gameService.findOne(query);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateGameDto: UpdateGameDto) {
-    return this.gameService.update(+id, updateGameDto);
+  @Patch('update')
+  update(@Body() updateGameDto: UpdateGameDto) {
+    return this.gameService.update(updateGameDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.gameService.remove(+id);
+  @Delete('remove/:_id')
+  remove(@Param('_id') _id: string) {
+    return this.gameService.remove(_id);
   }
 }
